@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="is">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Gagnvirkt námsplan fyrir rafvirkjabraut Fjölbrautaskólans í Breiðholti.">
+  <link rel="icon" href="assets/fb-logo.png">
+  <title>Rafvirkjabraut · Námsplan FB</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="course-data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main id="app">
+    <header class="card hero">
+      <div class="hero__heading">
+        <div>
+          <p class="eyebrow">Fjölbrautaskólinn í Breiðholti</p>
+          <h1>Rafvirkjabraut</h1>
+          <p class="intro">Raðaðu 33 fagáföngum brautarinnar á annir, sjáðu stundatöfluna og fylgstu með námsframvindunni. Þetta er skipulagstæki, ekki opinber skráning eða full 262 eininga námsáætlun.</p>
+        </div>
+        <a class="school-logo" href="https://www.fb.is" target="_blank" rel="noopener" title="Fara á heimasíðu FB">
+          <img src="assets/fb-logo.png" alt="Fjölbrautaskólinn í Breiðholti">
+        </a>
+      </div>
+
+      <nav class="mode-switcher" id="mode-switcher" aria-label="Veldu námsfyrirkomulag"></nav>
+      <p class="external-links">
+        <a href="https://www.fb.is/afangar-i-bodi" target="_blank" rel="noopener">Áfangar í boði í kvöldskóla ↗</a>
+        <a href="https://www.fb.is/rafvirkjabraut" target="_blank" rel="noopener">Um rafvirkjabraut FB ↗</a>
+      </p>
+
+      <div class="progress" aria-live="polite">
+        <div class="progress__labels">
+          <strong id="progress-label">Námsframvinda</strong>
+          <span id="stats"></span>
+        </div>
+        <div class="progress__track" aria-hidden="true"><span id="progress-bar"></span></div>
+      </div>
+
+      <div class="toolbar" aria-label="Stjórna námsplani">
+        <button type="button" onclick="addSemester(1)">+ Bæta við önn</button>
+        <button type="button" onclick="addSemester(-1)">− Fjarlægja síðustu önn</button>
+        <button type="button" id="reset-button" onclick="resetPlan()">Núllstilla í námskrá</button>
+      </div>
+      <details class="help">
+        <summary>Hvernig virkar námsplanið?</summary>
+        <p>Annirnar eru forfylltar eftir námskrá RAFV. Dragðu áfanga á milli anna eða notaðu ⇄ hnappinn í síma. Hakaðu við önn til að merkja alla áfanga hennar búna. Smelltu á pillu til að gráma áfangann og sjá hvað er eftir. Rauður rammi merkir skörun og appelsínugulur að undanfara vantar.</p>
+        <p><strong>Nýtt:</strong> Titill áfangans birtist á öllum pillum. Veldu <span class="inline-info">i</span> til að lesa stutta samantekt úr opinberri áfangalýsingu.</p>
+      </details>
+    </header>
+
+    <section class="card" id="unordered-card" aria-labelledby="unordered-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Til hliðar</p>
+          <h2 id="unordered-title">Óraðaðir áfangar</h2>
+        </div>
+        <p>Dragðu áfanga í önn. „Fjarlægja“ merkir áfanga sem lokið er.</p>
+      </div>
+      <button class="tray-target" id="unordered-target" type="button" onclick="placeSelected(0)" disabled>Færa valinn áfanga í óraðað</button>
+      <div class="course-tray" id="unordered" onclick="placeSelected(0)" ondragover="allowDrop(event)" ondragleave="this.classList.remove('is-over')" ondrop="dropCourse(event, 0)"></div>
+    </section>
+
+    <section class="card" id="curriculum-card" aria-labelledby="curriculum-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Yfirlit</p>
+          <h2 id="curriculum-title">Námskrá</h2>
+        </div>
+        <p>Færðu áfanga milli anna og sjáðu einingafjölda hverrar annar.</p>
+      </div>
+      <div class="warnings" id="warnings-curriculum" aria-live="polite"></div>
+      <div class="scroll-area"><div id="curriculum"></div></div>
+    </section>
+
+    <section class="card" id="done-card" aria-labelledby="done-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Námsferill</p>
+          <h2 id="done-title">Búnir áfangar</h2>
+        </div>
+        <p>Loknir áfangar geymast í vafranum þínum.</p>
+      </div>
+      <button class="tray-target" id="done-target" type="button" onclick="placeSelected(-1)" disabled>Færa valinn áfanga í lokna áfanga</button>
+      <div class="course-tray" id="done" onclick="placeSelected(-1)" ondragover="allowDrop(event)" ondragleave="this.classList.remove('is-over')" ondrop="dropCourse(event, -1)"></div>
+    </section>
+
+    <section class="card" id="schedule-card" aria-labelledby="schedule-title">
+      <div class="section-heading section-heading--schedule">
+        <div>
+          <p class="eyebrow">Tímasetningar</p>
+          <h2 id="schedule-title">Stundatafla</h2>
+        </div>
+        <p>Tímasetningar eru af fb.is og geta breyst milli anna.</p>
+      </div>
+      <div class="warnings" id="warnings-schedule" aria-live="polite"></div>
+      <div class="filter-row" id="week-filters"></div>
+      <div class="filter-row" id="color-filters"></div>
+      <div class="scroll-area"><div id="schedule"></div></div>
+      <div class="legend" id="legend"></div>
+      <p class="weekend-note" id="weekend-note"></p>
+    </section>
+
+    <details class="card export-card">
+      <summary>Flytja út uppröðun</summary>
+      <p>Afritaðu textann til að deila námsplaninu.</p>
+      <textarea id="export-text" onclick="this.select()" readonly rows="9" aria-label="Útflutt námsplan"></textarea>
+    </details>
+
+    <footer>
+      <p>Upplýsingar um áfanga eru unnar úr <a href="https://www.namskra.is/programmes/6a5a7f6b-b975-427a-8dac-6c8d15982679" target="_blank" rel="noopener">opinberri brautarlýsingu á Námskrá.is ↗</a>. Leitaðu alltaf staðfestingar hjá námsráðgjafa áður en endanlegt námsplan er ákveðið.</p>
+      <p>Upprunaleg hugmynd og hönnun: Bergvin Snær Andrésson.</p>
+    </footer>
+  </main>
+
+  <dialog id="course-dialog" aria-labelledby="dialog-title">
+    <button class="dialog-close" type="button" aria-label="Loka upplýsingaglugga" onclick="closeCourseInfo()">×</button>
+    <p class="dialog-code" id="dialog-code"></p>
+    <h2 id="dialog-title"></h2>
+    <p class="dialog-meta" id="dialog-meta"></p>
+    <div class="dialog-section">
+      <h3>Um áfangann</h3>
+      <p id="dialog-summary"></p>
+    </div>
+    <div class="dialog-section" id="dialog-prerequisites-wrap">
+      <h3>Forkröfur</h3>
+      <p id="dialog-prerequisites"></p>
+    </div>
+    <a class="source-link" id="dialog-source" target="_blank" rel="noopener">Sjá alla áfangalýsinguna á Námskrá.is ↗</a>
+  </dialog>
+</body>
+</html>
