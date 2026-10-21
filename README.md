@@ -57,7 +57,7 @@ Hvert námsfyrirkomulag fær sinn `localStorage` lykil svo breytingar á einu pl
 
 ### Árekstrar og undanfarar
 
-Árekstur finnst þegar tveir áfangar eru á sömu önn, tímabil þeirra skarast og þeir eru kenndir á sömu vikum. `PREREQUISITES` í `app.js` skráir bein tengsl milli áfanga; undanfari telst uppfylltur ef honum er lokið eða hann er á fyrri önn.
+Árekstur finnst þegar tveir áfangar eru á sömu önn, tímabil þeirra skarast og þeir eru kenndir á sömu vikum. `PREREQUISITES` í `app.js` skráir bein tengsl milli áfanga; undanfari telst uppfylltur ef honum er lokið eða hann er tekinn á fyrri eða sömu önn (til dæmis fyrri 8 vikur annarinnar á undan framhaldsáfanga seinni 8 vikurnar).
 
 ### Upplýsingagluggar
 

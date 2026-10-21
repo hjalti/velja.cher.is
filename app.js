@@ -408,7 +408,7 @@ function findWarnings() {
     const unmet = (PREREQUISITES[course.code] || []).filter((requiredCode) => {
       if (state.done[requiredCode]) return false;
       const prerequisiteSemester = state.plan[requiredCode];
-      return !prerequisiteSemester || prerequisiteSemester >= state.plan[course.code];
+      return !prerequisiteSemester || prerequisiteSemester > state.plan[course.code];
     });
     if (unmet.length) missing.set(course.code, unmet);
   });
